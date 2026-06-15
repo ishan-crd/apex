@@ -1,25 +1,42 @@
 {
   "expo": {
-    "name": "apex-gym",
+    "name": "APEX",
     "slug": "apex-gym",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
+    "scheme": "apex",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false,
+      "backgroundColor": "#0B0C0F"
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0B0C0F",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
+      "backgroundColor": "#0B0C0F",
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-font",
+        {
+          "fonts": []
+        }
+      ],
+      "expo-splash-screen"
+    ],
+    "experiments": {
+      "typedRoutes": true
     }
   }
 }

@@ -1,0 +1,18 @@
+export const C = {
+  accent: '#00E0A4',
+  accent2: '#00C2C8',
+  accentInk: '#04130E',
+  soft: 'rgba(0,224,164,0.14)',
+  bg: '#070809',
+  screen: '#0B0C0F',
+  surface: '#15171B',
+  surface2: '#1E2025',
+  surface3: '#292C32',
+  text: '#FFFFFF',
+  dim: 'rgba(255,255,255,0.62)',
+  faint: 'rgba(255,255,255,0.40)',
+  ghost: 'rgba(255,255,255,0.14)',
+  border: 'rgba(255,255,255,0.09)',
+  border2: 'rgba(255,255,255,0.15)',
+  track: 'rgba(255,255,255,0.10)',
+} as const;
