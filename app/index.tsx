@@ -13,6 +13,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { C } from '@/constants/colors';
 import Svg, { Path } from 'react-native-svg';
+import ModelViewer from '@/components/ModelViewer';
 
 const { height } = Dimensions.get('window');
 
@@ -56,13 +57,8 @@ export default function SplashScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Aura glow */}
-      <View style={styles.aura} />
-
-      {/* Body figure */}
-      <View style={styles.figWrap}>
-        <View style={styles.figSilhouette} />
-      </View>
+      {/* 3D body */}
+      <ModelViewer style={styles.model} />
 
       {/* Bottom gradient + content */}
       <LinearGradient
@@ -110,34 +106,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: C.screen,
   },
-  aura: {
+  model: {
     position: 'absolute',
-    left: '50%',
-    top: '36%',
-    width: 340,
-    height: 340,
-    marginLeft: -170,
-    marginTop: -170,
-    borderRadius: 170,
-    backgroundColor: C.soft,
-    zIndex: 0,
-  },
-  figWrap: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 80,
-    bottom: 200,
-    alignItems: 'center',
-    justifyContent: 'center',
+    top: 0, left: 0, right: 0, bottom: 0,
     zIndex: 1,
-  },
-  figSilhouette: {
-    width: 160,
-    height: '82%',
-    borderRadius: 80,
-    backgroundColor: C.surface2,
-    opacity: 0.55,
   },
   gradient: {
     position: 'absolute',

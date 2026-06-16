@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { C } from '@/constants/colors';
 import Svg, { Path } from 'react-native-svg';
+import ModelViewer from '@/components/ModelViewer';
 
 const { height } = Dimensions.get('window');
 
@@ -71,13 +72,8 @@ export default function DashboardScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Aura glow */}
-      <View style={styles.aura} />
-
-      {/* Figure silhouette */}
-      <View style={styles.figWrap}>
-        <View style={styles.figSilhouette} />
-      </View>
+      {/* 3D body */}
+      <ModelViewer style={styles.model} />
 
       {/* Body scale markers */}
       <View style={styles.bodyScale}>
@@ -167,34 +163,10 @@ export default function DashboardScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: C.screen },
-  aura: {
+  model: {
     position: 'absolute',
-    left: '50%',
-    top: '46%',
-    width: 360,
-    height: 360,
-    marginLeft: -180,
-    marginTop: -180,
-    borderRadius: 180,
-    backgroundColor: C.soft,
-    zIndex: 0,
-  },
-  figWrap: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 120,
-    bottom: 170,
-    alignItems: 'center',
-    justifyContent: 'center',
+    top: 0, left: 0, right: 0, bottom: 0,
     zIndex: 1,
-  },
-  figSilhouette: {
-    width: 155,
-    height: '82%',
-    borderRadius: 78,
-    backgroundColor: C.surface2,
-    opacity: 0.45,
   },
   bodyScale: {
     position: 'absolute',
