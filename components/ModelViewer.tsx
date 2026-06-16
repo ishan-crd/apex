@@ -10,7 +10,7 @@ import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { Canvas, useFrame } from '@react-three/fiber/native';
 import { useGLTF } from '@react-three/drei/native';
 import * as THREE from 'three';
-
+import { useColors } from '@/contexts/ThemeContext';
 
 // Import GLB as a direct module path — Metro resolves this to a local URI
 // that useGLTF can fetch via expo-asset/expo-file-system internally.
@@ -49,11 +49,17 @@ interface Props {
 }
 
 export default function ModelViewer({ style, rotationSpeed = 0.8 }: Props) {
+  const C = useColors();
   return (
-    <View style={[styles.root, style]}>
+    <View style={[{ backgroundColor: C.screen, overflow: 'hidden' }, style]}>
       <Canvas
+        key={C.screen}
         style={StyleSheet.absoluteFill}
         camera={{ position: [0, 0, 34], fov: 38, near: 0.1, far: 1000 }}
+        gl={{ alpha: true }}
+        onCreated={({ gl }) => {
+          gl.setClearColor(C.screen, 1);
+        }}
       >
         {/* Accent green key light from front-top */}
         <ambientLight intensity={0.5} />
@@ -68,7 +74,3 @@ export default function ModelViewer({ style, rotationSpeed = 0.8 }: Props) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  root: { backgroundColor: '#0B0C0F', overflow: 'hidden' },
-});
