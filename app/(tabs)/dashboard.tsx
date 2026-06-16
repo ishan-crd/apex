@@ -165,7 +165,10 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: C.screen },
   model: {
     position: 'absolute',
-    top: 0, left: 0, right: 0, bottom: 0,
+    top: 110,
+    left: 0,
+    right: 0,
+    bottom: 160,
     zIndex: 1,
   },
   bodyScale: {
@@ -185,7 +188,7 @@ const styles = StyleSheet.create({
   nowMark: { flexDirection: 'row', alignItems: 'center', gap: 7 },
   nowMarkText: { fontSize: 10, fontWeight: '700', letterSpacing: 1.2, color: C.faint, fontFamily: 'SpaceGrotesk_700Bold' },
   nowMarkLine: { width: 18, height: 2, backgroundColor: C.faint },
-  safeArea: { flex: 1 },
+  safeArea: { flex: 1, zIndex: 10 },
   body: { flex: 1, paddingHorizontal: 26, paddingBottom: 104, zIndex: 20 },
   head: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 4 },
   kick: { fontSize: 11.5, fontWeight: '600', letterSpacing: 2.1, textTransform: 'uppercase', color: C.faint, fontFamily: 'SpaceGrotesk_600SemiBold' },
