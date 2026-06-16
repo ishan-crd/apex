@@ -1,14 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Animated,
-  Dimensions,
-  ActivityIndicator,
-  Alert,
-} from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, Alert, Animated, Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -16,12 +7,11 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 // import * as WebBrowser from 'expo-web-browser';
 // import * as Google from 'expo-auth-session/providers/google';
 // WebBrowser.maybeCompleteAuthSession();
-import { C } from '@/constants/colors';
+import { type Colors } from '@/constants/colors';
+import { useColors } from '@/contexts/ThemeContext';
 import Svg, { Path } from 'react-native-svg';
 
 const { height } = Dimensions.get('window');
-
-// ── Icons ─────────────────────────────────────────────────────────────────────
 
 function AppleLogo() {
   return (
@@ -42,16 +32,15 @@ function GoogleLogo() {
   );
 }
 
-// ── Screen ────────────────────────────────────────────────────────────────────
-
 export default function AuthScreen() {
   const router = useRouter();
+  const C = useColors();
+  const styles = useMemo(() => makeStyles(C), [C]);
   const [loadingApple, setLoadingApple] = useState(false);
 
-  // Entrance animations
-  const logoAnim  = useRef(new Animated.Value(0)).current;
-  const cardAnim  = useRef(new Animated.Value(0)).current;
-  const btnsAnim  = useRef(new Animated.Value(0)).current;
+  const logoAnim = useRef(new Animated.Value(0)).current;
+  const cardAnim = useRef(new Animated.Value(0)).current;
+  const btnsAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.stagger(100, [
@@ -61,41 +50,23 @@ export default function AuthScreen() {
     ]).start();
   }, []);
 
-  const fadeUp = (anim: Animated.Value) => ({
-    opacity: anim,
-    transform: [{ translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [24, 0] }) }],
+  const fadeUp = (a: Animated.Value) => ({
+    opacity: a,
+    transform: [{ translateY: a.interpolate({ inputRange: [0, 1], outputRange: [24, 0] }) }],
   });
 
-  // ── Google (temporary: skip auth, go straight to app) ──────────────────────
-  const handleGoogle = () => {
-    router.replace('/(tabs)/dashboard');
-  };
+  const handleGoogle = () => { router.replace('/(tabs)/dashboard'); };
 
-  // TODO: wire up real Google OAuth when ready:
-  // const [, googleResponse, promptGoogleAsync] = Google.useAuthRequest({
-  //   clientId: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
-  // });
-  // useEffect(() => {
-  //   if (googleResponse?.type === 'success') router.replace('/(tabs)/dashboard');
-  // }, [googleResponse]);
-
-  // ── Apple Sign In ───────────────────────────────────────────────────────────
   const handleApple = async () => {
     setLoadingApple(true);
     try {
       const credential = await AppleAuthentication.signInAsync({
-        requestedScopes: [
-          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-          AppleAuthentication.AppleAuthenticationScope.EMAIL,
-        ],
+        requestedScopes: [AppleAuthentication.AppleAuthenticationScope.FULL_NAME, AppleAuthentication.AppleAuthenticationScope.EMAIL],
       });
-      // credential.identityToken → send to your backend to verify
       console.log('Apple user:', credential.user);
       router.replace('/capture');
     } catch (e: any) {
-      if (e.code !== 'ERR_REQUEST_CANCELED') {
-        Alert.alert('Sign in failed', 'Please try again.');
-      }
+      if (e.code !== 'ERR_REQUEST_CANCELED') Alert.alert('Sign in failed', 'Please try again.');
     } finally {
       setLoadingApple(false);
     }
@@ -103,227 +74,56 @@ export default function AuthScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Aura glow */}
       <View style={styles.aura} />
-
-      {/* Figure silhouette */}
-      <View style={styles.figWrap}>
-        <View style={styles.figSilhouette} />
-      </View>
-
-      {/* Gradient overlay + content */}
-      <LinearGradient
-        colors={['transparent', 'rgba(11,12,15,0.82)', C.screen]}
-        locations={[0, 0.32, 0.62]}
-        style={styles.gradient}
-      >
+      <View style={styles.figWrap}><View style={styles.figSilhouette} /></View>
+      <LinearGradient colors={['transparent', 'rgba(11,12,15,0.82)', C.screen]} locations={[0, 0.32, 0.62]} style={styles.gradient}>
         <SafeAreaView edges={['bottom']} style={styles.inner}>
-
-          {/* Logo + headline */}
           <Animated.View style={[styles.headBlock, fadeUp(logoAnim)]}>
             <Text style={styles.logo}>APEX</Text>
             <Text style={styles.headline}>Your transformation{'\n'}starts here.</Text>
           </Animated.View>
-
-          {/* Divider */}
           <Animated.View style={[styles.dividerRow, fadeUp(cardAnim)]}>
             <View style={styles.dividerLine} />
             <Text style={styles.dividerText}>sign in to continue</Text>
             <View style={styles.dividerLine} />
           </Animated.View>
-
-          {/* Buttons */}
           <Animated.View style={[styles.btnStack, fadeUp(btnsAnim)]}>
-
-            {/* Apple */}
-            <TouchableOpacity
-              activeOpacity={0.88}
-              onPress={handleApple}
-              disabled={loadingApple}
-              style={styles.appleBtn}
-            >
-              {loadingApple ? (
-                <ActivityIndicator color="#0B0C0F" size="small" />
-              ) : (
-                <>
-                  <AppleLogo />
-                  <Text style={styles.appleBtnText}>Continue with Apple</Text>
-                </>
-              )}
+            <TouchableOpacity activeOpacity={0.88} onPress={handleApple} disabled={loadingApple} style={styles.appleBtn}>
+              {loadingApple ? <ActivityIndicator color="#0B0C0F" size="small" /> : <><AppleLogo /><Text style={styles.appleBtnText}>Continue with Apple</Text></>}
             </TouchableOpacity>
-
-            {/* Google */}
-            <TouchableOpacity
-              activeOpacity={0.88}
-              onPress={handleGoogle}
-              disabled={loadingApple}
-              style={styles.googleBtn}
-            >
-              <GoogleLogo />
-              <Text style={styles.googleBtnText}>Continue with Google</Text>
+            <TouchableOpacity activeOpacity={0.88} onPress={handleGoogle} disabled={loadingApple} style={styles.googleBtn}>
+              <GoogleLogo /><Text style={styles.googleBtnText}>Continue with Google</Text>
             </TouchableOpacity>
-
           </Animated.View>
-
-          {/* Terms */}
           <Animated.Text style={[styles.terms, fadeUp(btnsAnim)]}>
-            By continuing you agree to our{' '}
-            <Text style={styles.termsLink}>Terms of Service</Text>
-            {' '}and{' '}
-            <Text style={styles.termsLink}>Privacy Policy</Text>
+            By continuing you agree to our <Text style={styles.termsLink}>Terms of Service</Text> and <Text style={styles.termsLink}>Privacy Policy</Text>
           </Animated.Text>
-
         </SafeAreaView>
       </LinearGradient>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: C.screen,
-  },
-  aura: {
-    position: 'absolute',
-    left: '50%',
-    top: '28%',
-    width: 380,
-    height: 380,
-    marginLeft: -190,
-    marginTop: -190,
-    borderRadius: 190,
-    backgroundColor: C.soft,
-    zIndex: 0,
-  },
-  figWrap: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 60,
-    bottom: 240,
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1,
-  },
-  figSilhouette: {
-    width: 160,
-    height: '82%',
-    borderRadius: 80,
-    backgroundColor: C.surface2,
-    opacity: 0.5,
-  },
-  gradient: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: height * 0.72,
-    zIndex: 2,
-    justifyContent: 'flex-end',
-  },
-  inner: {
-    paddingHorizontal: 24,
-    paddingBottom: 36,
-    gap: 0,
-  },
-
-  // Logo + headline
-  headBlock: {
-    marginBottom: 28,
-  },
-  logo: {
-    fontSize: 13,
-    fontWeight: '700',
-    letterSpacing: 4,
-    color: C.accent,
-    fontFamily: 'SpaceGrotesk_700Bold',
-    marginBottom: 10,
-  },
-  headline: {
-    fontSize: 34,
-    fontWeight: '700',
-    color: C.text,
-    letterSpacing: -1.2,
-    lineHeight: 40,
-    fontFamily: 'SpaceGrotesk_700Bold',
-  },
-
-  // Divider
-  dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    marginBottom: 22,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: C.border,
-  },
-  dividerText: {
-    fontSize: 11,
-    fontWeight: '600',
-    letterSpacing: 1.8,
-    textTransform: 'uppercase',
-    color: C.faint,
-    fontFamily: 'SpaceGrotesk_600SemiBold',
-  },
-
-  // Buttons
-  btnStack: {
-    gap: 12,
-    marginBottom: 20,
-  },
-  appleBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 11,
-    paddingVertical: 17,
-    borderRadius: 18,
-    backgroundColor: '#FFFFFF',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.18,
-    shadowRadius: 14,
-  },
-  appleBtnText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#0B0C0F',
-    fontFamily: 'SpaceGrotesk_700Bold',
-    letterSpacing: -0.3,
-  },
-  googleBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 11,
-    paddingVertical: 17,
-    borderRadius: 18,
-    backgroundColor: C.surface2,
-    borderWidth: 1,
-    borderColor: C.border2,
-  },
-  googleBtnText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: C.text,
-    fontFamily: 'SpaceGrotesk_600SemiBold',
-    letterSpacing: -0.3,
-  },
-
-  // Terms
-  terms: {
-    fontSize: 12,
-    color: C.faint,
-    textAlign: 'center',
-    lineHeight: 18,
-    fontFamily: 'SpaceGrotesk_400Regular',
-  },
-  termsLink: {
-    color: C.dim,
-    textDecorationLine: 'underline',
-  },
-});
+function makeStyles(C: Colors) {
+  return StyleSheet.create({
+    container: { flex: 1, backgroundColor: C.screen },
+    aura: { position: 'absolute', left: '50%', top: '28%', width: 380, height: 380, marginLeft: -190, marginTop: -190, borderRadius: 190, backgroundColor: C.soft, zIndex: 0 },
+    figWrap: { position: 'absolute', left: 0, right: 0, top: 60, bottom: 240, alignItems: 'center', justifyContent: 'center', zIndex: 1 },
+    figSilhouette: { width: 160, height: '82%', borderRadius: 80, backgroundColor: C.surface2, opacity: 0.5 },
+    gradient: { position: 'absolute', left: 0, right: 0, bottom: 0, height: height * 0.72, zIndex: 2, justifyContent: 'flex-end' },
+    inner: { paddingHorizontal: 24, paddingBottom: 36 },
+    headBlock: { marginBottom: 28 },
+    logo: { fontSize: 13, fontWeight: '700', letterSpacing: 4, color: C.accent, fontFamily: 'SpaceGrotesk_700Bold', marginBottom: 10 },
+    headline: { fontSize: 34, fontWeight: '700', color: C.text, letterSpacing: -1.2, lineHeight: 40, fontFamily: 'SpaceGrotesk_700Bold' },
+    dividerRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 22 },
+    dividerLine: { flex: 1, height: 1, backgroundColor: C.border },
+    dividerText: { fontSize: 11, fontWeight: '600', letterSpacing: 1.8, textTransform: 'uppercase', color: C.faint, fontFamily: 'SpaceGrotesk_600SemiBold' },
+    btnStack: { gap: 12, marginBottom: 20 },
+    appleBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 11, paddingVertical: 17, borderRadius: 18, backgroundColor: '#FFFFFF', shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.18, shadowRadius: 14 },
+    appleBtnText: { fontSize: 16, fontWeight: '700', color: '#0B0C0F', fontFamily: 'SpaceGrotesk_700Bold', letterSpacing: -0.3 },
+    googleBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 11, paddingVertical: 17, borderRadius: 18, backgroundColor: C.surface2, borderWidth: 1, borderColor: C.border2 },
+    googleBtnText: { fontSize: 16, fontWeight: '600', color: C.text, fontFamily: 'SpaceGrotesk_600SemiBold', letterSpacing: -0.3 },
+    terms: { fontSize: 12, color: C.faint, textAlign: 'center', lineHeight: 18, fontFamily: 'SpaceGrotesk_400Regular' },
+    termsLink: { color: C.dim, textDecorationLine: 'underline' },
+  });
+}

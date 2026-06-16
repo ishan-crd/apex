@@ -1,6 +1,7 @@
-import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
-import { C } from '@/constants/colors';
+import React, { useMemo } from 'react';
+import { StyleSheet, Text, TouchableOpacity, type ViewStyle, type TextStyle } from 'react-native';
+import { type Colors } from '@/constants/colors';
+import { useColors } from '@/contexts/ThemeContext';
 
 type Variant = 'solid' | 'ghost' | 'dark';
 
@@ -16,21 +17,13 @@ interface CTAButtonProps {
 }
 
 export function CTAButton({ label, onPress, variant = 'solid', style, textStyle, icon, iconLeft, disabled }: CTAButtonProps) {
-  const bg = variant === 'ghost' ? C.surface2 : variant === 'dark' ? C.text : C.accent;
+  const C = useColors();
+  const styles = useMemo(() => makeStyles(C), [C]);
+  const bg    = variant === 'ghost' ? C.surface2 : variant === 'dark' ? C.text : C.accent;
   const color = variant === 'ghost' ? C.text : variant === 'dark' ? C.screen : C.accentInk;
-
   return (
-    <TouchableOpacity
-      activeOpacity={0.85}
-      onPress={onPress}
-      disabled={disabled}
-      style={[
-        styles.btn,
-        { backgroundColor: bg },
-        variant === 'ghost' && styles.ghostBorder,
-        style,
-      ]}
-    >
+    <TouchableOpacity activeOpacity={0.85} onPress={onPress} disabled={disabled}
+      style={[styles.btn, { backgroundColor: bg }, variant === 'ghost' && styles.ghostBorder, style]}>
       {iconLeft && iconLeft}
       <Text style={[styles.label, { color }, textStyle]}>{label}</Text>
       {icon && icon}
@@ -38,25 +31,10 @@ export function CTAButton({ label, onPress, variant = 'solid', style, textStyle,
   );
 }
 
-const styles = StyleSheet.create({
-  btn: {
-    width: '100%',
-    borderRadius: 22,
-    paddingVertical: 19,
-    paddingHorizontal: 24,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-  },
-  ghostBorder: {
-    borderWidth: 1,
-    borderColor: C.border2,
-  },
-  label: {
-    fontWeight: '700',
-    fontSize: 17,
-    letterSpacing: 0.1,
-    fontFamily: 'SpaceGrotesk_700Bold',
-  },
-});
+function makeStyles(C: Colors) {
+  return StyleSheet.create({
+    btn: { width: '100%', borderRadius: 22, paddingVertical: 19, paddingHorizontal: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
+    ghostBorder: { borderWidth: 1, borderColor: C.border2 },
+    label: { fontWeight: '700', fontSize: 17, letterSpacing: 0.1, fontFamily: 'SpaceGrotesk_700Bold' },
+  });
+}
