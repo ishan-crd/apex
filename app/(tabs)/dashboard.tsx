@@ -112,7 +112,7 @@ export default function DashboardScreen() {
           </Animated.View>
         </View>
       </SafeAreaView>
-      <LinearGradient colors={['transparent', C.screen]} style={styles.tabGradient} pointerEvents="none" />
+      <LinearGradient colors={[`${C.screen}00`, C.screen]} style={styles.tabGradient} pointerEvents="none" />
     </View>
   );
 }

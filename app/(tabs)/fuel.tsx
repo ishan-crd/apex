@@ -95,7 +95,7 @@ export default function FuelScreen() {
           </View>
         </Animated.View>
       </ScrollView>
-      <LinearGradient colors={['transparent', C.screen]} style={styles.tabGradient} pointerEvents="none" />
+      <LinearGradient colors={[`${C.screen}00`, C.screen]} style={styles.tabGradient} pointerEvents="none" />
     </SafeAreaView>
   );
 }
