@@ -92,7 +92,7 @@ export default function SplashScreen() {
           >
             <TouchableOpacity
               activeOpacity={0.9}
-              onPress={() => router.push('/capture')}
+              onPress={() => router.push('/auth')}
               style={styles.cta}
             >
               <Text style={styles.ctaText}>Start</Text>
