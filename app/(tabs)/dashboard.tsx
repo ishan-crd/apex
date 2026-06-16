@@ -10,6 +10,7 @@ import {
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { C } from '@/constants/colors';
 import Svg, { Path } from 'react-native-svg';
 import ModelViewer from '@/components/ModelViewer';
@@ -124,7 +125,8 @@ export default function DashboardScreen() {
           <View style={{ flex: 1 }} />
 
           {/* Bottom card */}
-          <Animated.View style={[styles.card, s(d3)]}>
+          <Animated.View style={[styles.cardWrap, s(d3)]}>
+            <BlurView intensity={28} tint="dark" style={StyleSheet.absoluteFill} />
             <View style={styles.statRow}>
               <View style={styles.statTile}>
                 <Text style={[styles.statVal, { color: C.accent }]}>28</Text>
@@ -189,7 +191,7 @@ const styles = StyleSheet.create({
   nowMarkText: { fontSize: 10, fontWeight: '700', letterSpacing: 1.2, color: C.faint, fontFamily: 'SpaceGrotesk_700Bold' },
   nowMarkLine: { width: 18, height: 2, backgroundColor: C.faint },
   safeArea: { flex: 1, zIndex: 10 },
-  body: { flex: 1, paddingHorizontal: 26, paddingBottom: 104, zIndex: 20 },
+  body: { flex: 1, paddingHorizontal: 26, paddingBottom: 145, zIndex: 20 },
   head: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 4 },
   kick: { fontSize: 11.5, fontWeight: '600', letterSpacing: 2.1, textTransform: 'uppercase', color: C.faint, fontFamily: 'SpaceGrotesk_600SemiBold' },
   greeting: { fontSize: 27, fontWeight: '700', color: C.text, marginTop: 5, fontFamily: 'SpaceGrotesk_700Bold' },
@@ -224,9 +226,16 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   aheadText: { fontSize: 13, fontWeight: '600', color: C.accent, fontFamily: 'SpaceGrotesk_600SemiBold' },
-  card: { backgroundColor: C.surface, borderWidth: 1, borderColor: C.border, borderRadius: 28, padding: 16 },
+  cardWrap: {
+    borderRadius: 28,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.10)',
+    backgroundColor: 'rgba(21,23,27,0.55)',
+    overflow: 'hidden',
+    padding: 16,
+  },
   statRow: { flexDirection: 'row', gap: 10 },
-  statTile: { flex: 1, backgroundColor: C.surface2, borderRadius: 18, padding: 13, alignItems: 'center' },
+  statTile: { flex: 1, backgroundColor: 'rgba(30,32,37,0.60)', borderRadius: 18, padding: 13, alignItems: 'center' },
   statVal: { fontWeight: '700', fontSize: 26, color: C.text, lineHeight: 26, fontFamily: 'SpaceGrotesk_700Bold' },
   statLabel: { color: C.faint, fontSize: 11.5, fontWeight: '600', marginTop: 8, fontFamily: 'SpaceGrotesk_600SemiBold' },
   cta: {
