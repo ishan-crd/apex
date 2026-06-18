@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import { useColorScheme, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ThemeProvider, useColors } from '@/contexts/ThemeContext';
+import { OnboardingProvider } from '@/contexts/OnboardingContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -29,6 +30,7 @@ function AppShell() {
         <Stack.Screen name="auth" options={{ animation: 'fade' }} />
         <Stack.Screen name="capture" />
         <Stack.Screen name="analyze" />
+        <Stack.Screen name="onboarding-body-type" />
         <Stack.Screen name="onboarding-plan" />
         <Stack.Screen name="onboarding-fuel" />
         <Stack.Screen name="(tabs)" options={{ animation: 'fade' }} />
@@ -56,7 +58,9 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider>
-      <AppShell />
+      <OnboardingProvider>
+        <AppShell />
+      </OnboardingProvider>
     </ThemeProvider>
   );
 }

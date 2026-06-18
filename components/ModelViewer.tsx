@@ -12,13 +12,12 @@ import { useGLTF } from '@react-three/drei/native';
 import * as THREE from 'three';
 import { useColors } from '@/contexts/ThemeContext';
 
-// Import GLB as a direct module path — Metro resolves this to a local URI
-// that useGLTF can fetch via expo-asset/expo-file-system internally.
+// Default model — used if no `source` prop is passed.
 // @ts-ignore — .glb has no TS declaration
-import modelPath from '../assets/FinalBaseMesh.glb';
+import defaultModel from '../assets/FinalBaseMesh.glb';
 
-function Body({ speed }: { speed: number }) {
-  const { scene } = useGLTF(modelPath as string);
+function Body({ source, speed }: { source: any; speed: number }) {
+  const { scene } = useGLTF(source as string);
   const groupRef = useRef<THREE.Group>(null!);
   const centred  = useRef(false);
 
@@ -46,29 +45,29 @@ function Body({ speed }: { speed: number }) {
 interface Props {
   style?: StyleProp<ViewStyle>;
   rotationSpeed?: number;
+  source?: any; // Metro asset module (e.g. require('./mesh.glb')) — falls back to default
+  cameraZ?: number; // smaller = zoomed in, larger = zoomed out. Default 34.
 }
 
-export default function ModelViewer({ style, rotationSpeed = 0.8 }: Props) {
+export default function ModelViewer({ style, rotationSpeed = 0.8, source, cameraZ = 34 }: Props) {
   const C = useColors();
+  const mesh = source ?? defaultModel;
   return (
     <View style={[{ backgroundColor: C.screen, overflow: 'hidden' }, style]}>
       <Canvas
-        key={C.screen}
+        key={`${C.screen}-${mesh}-${cameraZ}`}
         style={StyleSheet.absoluteFill}
-        camera={{ position: [0, 0, 34], fov: 38, near: 0.1, far: 1000 }}
+        camera={{ position: [0, 0, cameraZ], fov: 38, near: 0.1, far: 1000 }}
         gl={{ alpha: true }}
-        onCreated={({ gl }) => {
-          gl.setClearColor(C.screen, 1);
-        }}
+        onCreated={({ gl }) => { gl.setClearColor(C.screen, 1); }}
       >
-        {/* Accent green key light from front-top */}
         <ambientLight intensity={0.5} />
         <directionalLight color="#00E0A4" position={[1.5, 3,  4]} intensity={1.2} />
         <directionalLight color="#ffffff" position={[-3,  1,  1]} intensity={0.2} />
         <directionalLight color="#00E0A4" position={[0,  -2, -3]} intensity={0.45} />
 
         <Suspense fallback={null}>
-          <Body speed={rotationSpeed} />
+          <Body source={mesh} speed={rotationSpeed} />
         </Suspense>
       </Canvas>
     </View>

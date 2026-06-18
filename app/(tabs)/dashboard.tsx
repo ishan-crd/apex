@@ -5,7 +5,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { type Colors } from '@/constants/colors';
+import { getBodyType } from '@/constants/bodyTypes';
 import { useColors } from '@/contexts/ThemeContext';
+import { useOnboarding } from '@/contexts/OnboardingContext';
 import Svg, { Path } from 'react-native-svg';
 import ModelViewer from '@/components/ModelViewer';
 
@@ -37,6 +39,8 @@ export default function DashboardScreen() {
   const scheme = useColorScheme();
   const styles = useMemo(() => makeStyles(C, scheme === 'light'), [C, scheme]);
   const pct = useCountUp(62, 400);
+  const { bodyType } = useOnboarding();
+  const selected = getBodyType(bodyType);
 
   const headAnim = useRef(new Animated.Value(0)).current;
   const d1 = useRef(new Animated.Value(0)).current;
@@ -54,7 +58,7 @@ export default function DashboardScreen() {
 
   return (
     <View style={styles.container}>
-      <ModelViewer style={styles.model} />
+      <ModelViewer style={styles.model} source={selected?.mesh} cameraZ={4} />
       <View style={styles.bodyScale}>
         <View style={styles.goalMark}>
           <Text style={styles.goalMarkText}>DREAM</Text>

@@ -41,6 +41,7 @@ export default function CaptureScreen() {
   const router = useRouter();
   const C = useColors();
   const styles = useMemo(() => makeStyles(C), [C]);
+  // Photos are transient — used only to feed the analyze step, never persisted.
   const [nowUri, setNowUri] = useState<string | null>(null);
   const [dreamUri, setDreamUri] = useState<string | null>(null);
 

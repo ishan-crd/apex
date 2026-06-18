@@ -84,8 +84,8 @@ export default function AnalyzeScreen() {
         <Animated.Text style={[styles.caption, s(capAnim)]} key={capIdx}>{SCAN_CAPTIONS[capIdx]}</Animated.Text>
         <View style={{ flex: 1 }} />
         <Animated.View style={[{ opacity: ctaAnim }, s(ctaAnim)]}>
-          <View onTouchEnd={() => done && router.push('/onboarding-plan')} style={[styles.cta, !done && { opacity: 0, pointerEvents: 'none' } as any]}>
-            <Text style={styles.ctaText}>See my plan</Text>
+          <View onTouchEnd={() => done && router.push('/onboarding-body-type')} style={[styles.cta, !done && { opacity: 0, pointerEvents: 'none' } as any]}>
+            <Text style={styles.ctaText}>Select body type</Text>
             <ArrowRight />
           </View>
         </Animated.View>
