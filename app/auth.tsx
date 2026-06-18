@@ -55,7 +55,7 @@ export default function AuthScreen() {
     transform: [{ translateY: a.interpolate({ inputRange: [0, 1], outputRange: [24, 0] }) }],
   });
 
-  const handleGoogle = () => { router.replace('/(tabs)/dashboard'); };
+  const handleGoogle = () => { router.replace('/capture'); };
 
   const handleApple = async () => {
     setLoadingApple(true);

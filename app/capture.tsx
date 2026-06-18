@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Animated, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as ImagePicker from 'expo-image-picker';
 import { type Colors } from '@/constants/colors';
 import { useColors } from '@/contexts/ThemeContext';
 import { IconButton } from '@/components/IconButton';
@@ -40,8 +41,26 @@ export default function CaptureScreen() {
   const router = useRouter();
   const C = useColors();
   const styles = useMemo(() => makeStyles(C), [C]);
-  const [nowSelected, setNowSelected] = useState(false);
-  const [dreamSelected, setDreamSelected] = useState(false);
+  const [nowUri, setNowUri] = useState<string | null>(null);
+  const [dreamUri, setDreamUri] = useState<string | null>(null);
+
+  const pickPhoto = async (which: 'now' | 'dream') => {
+    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!perm.granted) {
+      Alert.alert('Permission needed', 'Please allow photo library access to continue.');
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [3, 4],
+      quality: 0.85,
+    });
+    if (!result.canceled && result.assets[0]) {
+      const uri = result.assets[0].uri;
+      if (which === 'now') setNowUri(uri); else setDreamUri(uri);
+    }
+  };
   const anim = useRef(new Animated.Value(0)).current;
   const d1 = useRef(new Animated.Value(0)).current;
   const d2 = useRef(new Animated.Value(0)).current;
@@ -71,25 +90,36 @@ export default function CaptureScreen() {
         <Animated.Text style={[styles.sub, s(d2)]}>Drop where you are — and where you're headed.</Animated.Text>
         <Animated.View style={[styles.tilesRow, s(d3)]}>
           <View style={styles.vsBadge}><Text style={styles.vsText}>VS</Text></View>
-          <TouchableOpacity style={styles.tile} activeOpacity={0.85} onPress={() => setNowSelected(true)}>
-            <View style={[styles.tilebox, nowSelected && styles.tileboxSelected]}>
-              <View style={styles.tilePhIcon}><CameraIcon /></View>
-              {nowSelected && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.soft, borderRadius: 24 }]} />}
+          <TouchableOpacity style={styles.tile} activeOpacity={0.85} onPress={() => pickPhoto('now')}>
+            <View style={[styles.tilebox, nowUri && styles.tileboxSelected]}>
+              {nowUri ? (
+                <Image source={{ uri: nowUri }} style={styles.tileImage} />
+              ) : (
+                <View style={styles.tilePhIcon}><CameraIcon /></View>
+              )}
             </View>
             <Text style={styles.tileLabel}>Now</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.tile} activeOpacity={0.85} onPress={() => setDreamSelected(true)}>
+          <TouchableOpacity style={styles.tile} activeOpacity={0.85} onPress={() => pickPhoto('dream')}>
             <View style={[styles.tilebox, styles.tileboxGoal]}>
-              <View style={[styles.tilePhIcon, styles.tilePhGoal]}><TargetIcon /></View>
-              {dreamSelected && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.soft, borderRadius: 24 }]} />}
+              {dreamUri ? (
+                <Image source={{ uri: dreamUri }} style={styles.tileImage} />
+              ) : (
+                <View style={[styles.tilePhIcon, styles.tilePhGoal]}><TargetIcon /></View>
+              )}
             </View>
             <Text style={[styles.tileLabel, { color: C.accent }]}>Dream</Text>
           </TouchableOpacity>
         </Animated.View>
         <View style={{ flex: 1 }} />
         <Animated.View style={s(d4)}>
-          <TouchableOpacity activeOpacity={0.85} onPress={() => router.push('/analyze')} style={styles.cta}>
-            <StarIcon /><Text style={styles.ctaText}>Analyze me</Text>
+          <TouchableOpacity
+            activeOpacity={0.85}
+            disabled={!nowUri}
+            onPress={() => router.push('/analyze')}
+            style={[styles.cta, !nowUri && styles.ctaDisabled]}
+          >
+            <StarIcon /><Text style={styles.ctaText}>{nowUri ? 'Analyze me' : 'Upload your photo'}</Text>
           </TouchableOpacity>
         </Animated.View>
       </View>
@@ -110,11 +140,13 @@ function makeStyles(C: Colors) {
     tileboxSelected: { borderStyle: 'solid', borderColor: C.accent },
     tileboxGoal: { borderStyle: 'solid', borderColor: C.accent },
     tilePhIcon: { width: 62, height: 62, borderRadius: 20, backgroundColor: C.surface2, alignItems: 'center', justifyContent: 'center' },
+    tileImage: { width: '100%', height: '100%', borderRadius: 24 },
     tilePhGoal: { backgroundColor: C.soft },
     tileLabel: { fontWeight: '700', fontSize: 15, color: C.text, fontFamily: 'SpaceGrotesk_700Bold' },
     vsBadge: { position: 'absolute', left: '50%', top: TILE_H / 2, zIndex: 3, width: 42, height: 42, borderRadius: 21, backgroundColor: C.accent, alignItems: 'center', justifyContent: 'center', marginLeft: -21, marginTop: -21, borderWidth: 4, borderColor: C.screen },
     vsText: { fontWeight: '700', fontSize: 13, color: C.accentInk, fontFamily: 'SpaceGrotesk_700Bold' },
     cta: { width: '100%', borderRadius: 22, paddingVertical: 19, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, backgroundColor: C.accent, shadowColor: C.accent, shadowOffset: { width: 0, height: 16 }, shadowOpacity: 0.4, shadowRadius: 20 },
+    ctaDisabled: { backgroundColor: C.surface2, shadowOpacity: 0 },
     ctaText: { fontWeight: '700', fontSize: 17, color: C.accentInk, fontFamily: 'SpaceGrotesk_700Bold' },
   });
 }
